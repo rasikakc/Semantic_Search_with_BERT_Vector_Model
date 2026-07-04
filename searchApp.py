@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 from elasticsearch import Elasticsearch
 from sentence_transformers import SentenceTransformer
@@ -6,9 +8,11 @@ indexName = "all_products"
 
 try:
     es = Elasticsearch(
-    "https://be2d2d7c8a5a4f02ad13d92a6d1e133e.asia-south1.gcp.elastic-cloud.com:443",
-    basic_auth=("elastic","1LweND5dy6PbB4OXARnJxCXx")
+        os.environ["ES_URL"],
+        basic_auth=(os.environ.get("ES_USER", "elastic"), os.environ["ES_PASSWORD"])
     )
+except KeyError as e:
+    raise SystemExit(f"Missing environment variable: {e}. Set ES_URL, ES_USER, ES_PASSWORD.")
 except ConnectionError as e:
     print("Connection Error:", e)
     
